@@ -1,5 +1,8 @@
 .KEEP_STATE:
 
+
+
+
 # source code
 # EXES: individual binary executables
 # OBJS: non-executable object files
@@ -20,20 +23,14 @@ CFLAGS += -pedantic
 #CFLAGS += -pg
 
 # Directories for includes & linking flags
-INCLUDE_DIR=$(HOME)/include
-EXTERN_DIR=/net/shendure/vol10/jnburton/extern
-BOOST_DIR=$(EXTERN_DIR)/boost_1_47_0
-SAMTOOLS_DIR=$(EXTERN_DIR)/samtools-0.1.16
+INCLUDE_DIR=include
+INCLUDES=-I$(INCLUDE_DIR) -I$(METAPHASE_SAMTOOLS_DIR) -I$(METAPHASE_BOOST_DIR)
 
-# Includes
-INCLUDES=-I$(INCLUDE_DIR) -I$(SAMTOOLS_DIR)
-
-# Linking flags
-# If linking works but you get the runtime error "cannot open shared object file", make sure the boost lib directory is in your $LD_LIBRARY_PATH.
+# Linking flags.  The environment variables BOOST_LIBS and SAMTOOLS_LIBS must be set or this won't work.
 INC_LIBS=-L$(INCLUDE_DIR) -lJtime -lJgtools -lJmarkov
-BOOST_LIBS=-L$(BOOST_DIR)/stage/lib -lboost_filesystem #-lboost_system #-lboost_regex
-SAMTOOLS_LIBS=-L$(SAMTOOLS_DIR) -lbam
-LFLAGS = -lz $(INC_LIBS) $(BOOST_LIBS) $(SAMTOOLS_LIBS)
+BOOST_LIBS=-L$(METAPHASE_BOOST_DIR)/stage/lib -lboost_filesystem -lboost_system #-lboost_regex
+SAMTOOLS_LIBS=-L$(METAPHASE_SAMTOOLS_DIR) -lbam
+LFLAGS = $(INC_LIBS) $(BOOST_LIBS) $(SAMTOOLS_LIBS) -lz -lpthread
 
 
 # dependencies
@@ -41,12 +38,12 @@ LFLAGS = -lz $(INC_LIBS) $(BOOST_LIBS) $(SAMTOOLS_LIBS)
 .cc.o:  .cc
 	$(CC) -c $< $(CFLAGS) $(INCLUDES)
 
-all:    $(EXE)
+all:    check-env libs $(EXE)
 
-libs:
-	cd $(INCLUDE_DIR); make all; cd -
+libs: check-env
+	$(MAKE) -C include
 
-MetaPhase:  $(OBJS)
+MetaPhase:  check-env $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o MetaPhase $(LFLAGS)
 
 clean:
@@ -56,4 +53,12 @@ clean:
 clobber: clean
 	$(RM) $(BACKUPS) $(EXE)
 
-                                                                               
+# Environment variable check.
+check-env:
+ifndef METAPHASE_SAMTOOLS_DIR
+    $(error Environment variable $$METAPHASE_SAMTOOLS_DIR is undefined - please set to a directory containing the samtools package)
+endif
+ifndef METAPHASE_BOOST_DIR
+    $(error Environment variable $$METAPHASE_BOOST_DIR is undefined - please set to a directory containing the root of the Boost package)
+endif
+
