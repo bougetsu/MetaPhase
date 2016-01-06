@@ -4,7 +4,6 @@
 #include "TextFileParsers.h" // TokenizeFile, GetFastaNames, GetFastaSizes
 #include "LinkMatrix.h" // LinkMatrixInt
 #include "HierarchicalClustering.h" // AgglomerativeHierarchicalClustering
-#include "DensityClustering.h" // DensityClustering
 
 #include <assert.h>
 #include <string>
