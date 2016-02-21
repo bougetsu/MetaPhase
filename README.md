@@ -1,3 +1,44 @@
+## Making this work
+Unfortunately the MetaPhase repository is badly broken in at least the following ways:  
+1. The link to the tarball listed in the Readme is broken/non-existent  
+2. The "include" folder required to compile is missing from the repository.  
+3. The "test_data" folder is also missing from the repository.  
+
+I have played with this a bit and gotten it to compile.  
+I have added the files I could find from other places to the repository to make it compile.  
+However, since there is no test data, I cannot know if it actually works.  
+
+Here are my instructions to at least get it to compile:  
+
+# Compilation instructions for Ubuntu
+```
+sudo apt-get install libncurses5-dev zlib1g-dev
+cd
+git clone https://github.com/chrisl8/MetaPhase.git
+cd MetaPhase/src/extern/boost_1_47_0
+./bootstrap.sh --prefix=./stage
+./b2 install
+cd ${HOME}/MetaPhase/src/extern/samtools-0.1.16
+make
+cd ${HOME}/MetaPhase/src
+export METAPHASE_BOOST_DIR=${HOME}/MetaPhase/src/extern/boost_1_47_0
+export METAPHASE_SAMTOOLS_DIR=${HOME}/MetaPhase/src/extern/samtools-0.1.16
+make
+```
+
+## Run Metaphase:
+```
+cd ${HOME}/MetaPhase/src
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HOME}/MetaPhase/src/extern/boost_1_47_0/stage/lib
+./MetaPhase
+```
+
+## Testing?  
+Since the test data is not in the repository I have no way to test this to even know if it works.  
+If and when I get some test data I will add it here if I can and update the instructions.  
+
+# Below is the original Readme text.
+
 ## MetaPhase User's Manual and Quick Start Guide
 MetaPhase: A software tool for metagenomic deconvolution with Hi-C.
 
@@ -275,7 +316,7 @@ After you've gotten MetaPhase to run properly, take a good look at the outputs, 
 
 #### COPYRIGHT AND DISCLAIMER
 
-The MetaPhase software package and all software and documentation contained with it are copyright © 2013-2014 by Josh Burton and the University of Washington. All rights are reserved.
+The MetaPhase software package and all software and documentation contained with it are copyright Â© 2013-2014 by Josh Burton and the University of Washington. All rights are reserved.
 
 This software is supplied 'as is' without any warranty or guarantee of support. The University of Washington is not responsible for its use, misuse, or functionality. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability arising from, out of, or in connection with this software.
 
